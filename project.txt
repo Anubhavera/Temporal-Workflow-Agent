@@ -1,0 +1,165 @@
+# 🧠 Take-Home Assignment: Workflow Agent (Temporal-Backed)
+
+**Role:** Senior Full-Stack Engineer (AI SaaS)
+
+**Time Expectation:** ~6–10 hours (can be done overnight)
+
+**Primary Stack:** Node.js · Temporal · Next.js · TypeScript
+
+---
+
+## 🎯 Objective
+
+Build a **minimal but production-minded workflow agent system** where:
+
+- **Temporal (Node.js SDK)** is used as the workflow orchestration backend
+- **Next.js** is used for the frontend
+- **Each tool call is implemented as a separate Temporal Activity**
+- A workflow coordinates multiple tool calls to complete a task
+
+This is a **systems and architecture exercise**, not a UI challenge.
+
+---
+
+## 🧩 Problem Statement
+
+You are building a **tiny agent runtime**.
+
+A user submits a task from the frontend.
+
+That task is executed by a **Temporal workflow** which:
+
+1. Interprets the task
+2. Calls one or more tools (activities)
+3. Produces a final structured result
+4. Handles retries and failures intentionally
+
+Think of this as a **primitive version of an agent execution engine**, not a chatbot.
+
+---
+
+## 🔒 Hard Constraints (Non-Negotiable)
+
+Your solution **must** follow these rules:
+
+- Temporal is the **only orchestration mechanism**
+- Each tool invocation must be a **separate Temporal activity**
+- Workflow code must be **deterministic**
+- Activities must be **side-effectful and isolated**
+- Frontend must:
+    - Trigger workflow execution
+    - Display execution status and/or result
+- TypeScript is required
+
+Submissions that do not meet these constraints will not be considered.
+
+---
+
+## 🏗️ Build Requirements
+
+### Temporal Workflow
+
+- Implement a Temporal workflow that:
+    - Accepts a task payload
+    - Orchestrates **at least 3 activities**
+    - Uses explicit retry and timeout configuration
+    - Returns a structured result
+
+---
+
+### Activities (Tools)
+
+- Each tool must be implemented as a **separate Temporal activity**
+- Activities must have clear input/output boundaries
+- Activities must be independently retryable
+
+---
+
+### Frontend (Next.js)
+
+- Provide a minimal UI to:
+    - Submit a task
+    - Trigger workflow execution
+    - View execution status or final result
+
+---
+
+### Worker Setup
+
+- Include a Temporal worker with:
+    - Workflow registration
+    - Activity registration
+- Maintain clear separation between workflow, activity, and frontend code
+
+---
+
+## 🧠 Design Expectations
+
+We are intentionally **not prescribing a system diagram**.
+
+Within the constraints above, you are expected to:
+
+- Make your own architectural decisions
+- Justify those decisions in your README
+- Demonstrate good judgment around determinism, retries, failure handling, and extensibility.
+
+---
+
+## 📁 Repository Expectations
+
+Your repository should include:
+
+- Working code
+- Clear setup instructions
+- A README explaining:
+    - High-level architecture
+    - Why you structured workflows vs activities the way you did
+    - How failures and retries are handled
+    - What you would change if this were production
+
+---
+
+**Scope note:**
+
+Authentication, databases, production deployment, real LLM calls, and UI polish are
+
+*out of scope*. Mocking is acceptable if reasoning is sound.
+
+---
+
+## 🧠 Bonus (Optional)
+
+These are **nice to have**, not required:
+
+- Step-by-step execution status in the UI
+- Thoughtful comments about determinism constraints
+- Notes on how MCP tools could plug into this system
+- Clear extension points for future agent capabilities
+
+---
+
+## 📝 Evaluation Criteria
+
+We will evaluate submissions on:
+
+### 1️⃣ Systems Thinking
+
+- Clear separation of concerns
+- Correct use of workflows vs activities
+
+### 2️⃣ Temporal Fluency
+
+- Determinism
+- Retry & timeout handling
+- Worker setup correctness
+
+### 3️⃣ Engineering Judgment
+
+- Simplicity
+- Clean abstractions
+- Sensible tradeoffs
+
+### 4️⃣ Ownership Mentality
+
+- README quality
+- Ability to explain *why*, not just *what*

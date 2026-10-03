@@ -26,6 +26,9 @@ import { ValidationError } from '../types.js';
  */
 export async function parseTask(input: string): Promise<TaskSpec> {
   // Validate input
+  if (typeof input !== 'string') {
+    throw new ValidationError('Task input must be a string');
+  }
   const trimmed = input.trim();
   if (!trimmed) {
     throw new ValidationError('Task input cannot be empty');
@@ -131,5 +134,5 @@ export async function fetchSourceB(spec: TaskSpec): Promise<SourceResult> {
 /** Simulates network latency for demo purposes */
 function simulateNetworkDelay(minMs: number, maxMs: number): Promise<void> {
   const delay = Math.floor(Math.random() * (maxMs - minMs) + minMs);
-  return new Promise((resolve) => setTimeout(resolve, delay));
+  return Context.current().sleep(delay);
 }

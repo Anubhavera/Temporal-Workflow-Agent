@@ -12,18 +12,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { startWorkflow } from '@/lib/temporal';
 
 export async function POST(request: NextRequest) {
+  let body: unknown;
   try {
-    const body = await request.json();
-    const taskInput = body.taskInput;
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 });
+  }
+  const taskInput = body && typeof body === 'object' && 'taskInput' in body ? body.taskInput : undefined;
 
-    if (!taskInput || typeof taskInput !== 'string') {
-      return NextResponse.json(
-        { error: 'taskInput is required and must be a string' },
-        { status: 400 }
-      );
-    }
+  if (typeof taskInput !== 'string' || taskInput.trim().length < 3) {
+    return NextResponse.json({ error: 'taskInput must be a string of at least 3 characters' }, { status: 400 });
+  }
 
-    const workflowId = await startWorkflow(taskInput);
+  try {
+
+    const workflowId = await startWorkflow(taskInput.trim());
 
     return NextResponse.json({ workflowId });
   } catch (error) {

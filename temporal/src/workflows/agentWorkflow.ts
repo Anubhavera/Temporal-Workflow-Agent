@@ -2,13 +2,13 @@
  * Agent Workflow - Orchestrates task execution through multiple activities.
  * 
  * DESIGN NOTES:
- * - This workflow is DETERMINISTIC: no I/O, no random, no Date.now()
+ * - Deterministic orchestration: no I/O; workflow time comes from Temporal's sandbox
  * - All side effects are delegated to activities
  * - Uses Promise.allSettled for graceful partial failure handling
  * - Synthesis is a pure function (not an activity) because it has no side effects
  */
 
-import { proxyActivities, ApplicationFailure } from '@temporalio/workflow';
+import { proxyActivities, ApplicationFailure, isCancellation, ActivityCancellationType, CancellationScope, CancelledFailure } from '@temporalio/workflow';
 import type * as activities from '../activities/index.js';
 import type { AgentResult, SourceResult, TaskSpec } from '../types.js';
 
@@ -38,6 +38,7 @@ const { fetchSourceA, fetchSourceB } = proxyActivities<typeof activities>({
   startToCloseTimeout: '30s',
   scheduleToCloseTimeout: '2m',
   heartbeatTimeout: '15s',
+  cancellationType: ActivityCancellationType.WAIT_CANCELLATION_COMPLETED,
   retry: {
     maximumAttempts: 5,
     initialInterval: '500ms',
@@ -69,6 +70,8 @@ export async function agentWorkflow(taskInput: string): Promise<AgentResult> {
     fetchSourceB(taskSpec),
   ]);
 
+  if (CancellationScope.current().consideredCancelled) throw new CancelledFailure("Workflow cancelled");
+
   // Extract successful results and errors
   const successfulResults: SourceResult[] = [];
   const errors: string[] = [];
@@ -79,6 +82,7 @@ export async function agentWorkflow(taskInput: string): Promise<AgentResult> {
     } else {
       // Extract error message, handling Temporal's ApplicationFailure
       const error = result.reason;
+      if (isCancellation(error)) throw error;
       const message = error instanceof ApplicationFailure
         ? error.message
         : error?.message ?? 'Unknown error';
@@ -127,8 +131,7 @@ function synthesizeResults(
     summary,
     errors: errors.length > 0 ? errors : undefined,
     partial: errors.length > 0,
-    // Note: We use a static value here for determinism in workflow replay
-    // In a real system, you might use workflow.now() or pass this from an activity
-    completedAt: Date.now(), // Safe in final return, not used for branching
+    // Temporal's sandbox supplies replay-safe workflow time.
+    completedAt: Date.now(),
   };
 }

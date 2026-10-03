@@ -16,11 +16,14 @@ importers:
         version: 1.14.1
       '@temporalio/worker':
         specifier: ^1.11.0
-        version: 1.14.1(tslib@2.8.1)
+        version: 1.14.1(esbuild@0.27.2)(tslib@2.8.1)
       '@temporalio/workflow':
         specifier: ^1.11.0
         version: 1.14.1
     devDependencies:
+      '@temporalio/testing':
+        specifier: 1.14.1
+        version: 1.14.1(esbuild@0.27.2)(tslib@2.8.1)
       '@types/node':
         specifier: ^20.10.0
         version: 20.19.30
@@ -468,6 +471,10 @@ packages:
 
   '@temporalio/proto@1.14.1':
     resolution: {integrity: sha512-mCsUommDPXbXbBu60p1g4jpSqVb+GNR67yR0uKTU8ARb4qVZQo7SQnOUaneoxDERDXuR/yIjVCektMm+7Myb+A==}
+    engines: {node: '>= 18.0.0'}
+
+  '@temporalio/testing@1.14.1':
+    resolution: {integrity: sha512-iUyNHdoud5kD62LsXZWIryaPURpyaqCti3jNVaeL8nyQTmYyUXq6Trp5SuEEzbOMO7jLCoYI9cTfwzxAXy2p2g==}
     engines: {node: '>= 18.0.0'}
 
   '@temporalio/worker@1.14.1':
@@ -1301,7 +1308,24 @@ snapshots:
       long: 5.3.2
       protobufjs: 7.5.4
 
-  '@temporalio/worker@1.14.1(tslib@2.8.1)':
+  '@temporalio/testing@1.14.1(esbuild@0.27.2)(tslib@2.8.1)':
+    dependencies:
+      '@temporalio/activity': 1.14.1
+      '@temporalio/client': 1.14.1
+      '@temporalio/common': 1.14.1
+      '@temporalio/core-bridge': 1.14.1
+      '@temporalio/proto': 1.14.1
+      '@temporalio/worker': 1.14.1(esbuild@0.27.2)(tslib@2.8.1)
+      '@temporalio/workflow': 1.14.1
+      abort-controller: 3.0.0
+    transitivePeerDependencies:
+      - '@swc/helpers'
+      - esbuild
+      - tslib
+      - uglify-js
+      - webpack-cli
+
+  '@temporalio/worker@1.14.1(esbuild@0.27.2)(tslib@2.8.1)':
     dependencies:
       '@grpc/grpc-js': 1.14.3
       '@swc/core': 1.15.11
@@ -1320,11 +1344,11 @@ snapshots:
       protobufjs: 7.5.4
       rxjs: 7.8.2
       source-map: 0.7.6
-      source-map-loader: 4.0.2(webpack@5.104.1(@swc/core@1.15.11))
+      source-map-loader: 4.0.2(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2))
       supports-color: 8.1.1
-      swc-loader: 0.2.7(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11))
+      swc-loader: 0.2.7(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2))
       unionfs: 4.6.0
-      webpack: 5.104.1(@swc/core@1.15.11)
+      webpack: 5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)
     transitivePeerDependencies:
       - '@swc/helpers'
       - esbuild
@@ -1693,11 +1717,11 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  source-map-loader@4.0.2(webpack@5.104.1(@swc/core@1.15.11)):
+  source-map-loader@4.0.2(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)):
     dependencies:
       iconv-lite: 0.6.3
       source-map-js: 1.2.1
-      webpack: 5.104.1(@swc/core@1.15.11)
+      webpack: 5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)
 
   source-map-support@0.5.21:
     dependencies:
@@ -1722,24 +1746,25 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  swc-loader@0.2.7(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)):
+  swc-loader@0.2.7(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)):
     dependencies:
       '@swc/core': 1.15.11
       '@swc/counter': 0.1.3
-      webpack: 5.104.1(@swc/core@1.15.11)
+      webpack: 5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)
 
   tapable@2.3.0: {}
 
-  terser-webpack-plugin@5.3.16(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)):
+  terser-webpack-plugin@5.3.16(@swc/core@1.15.11)(esbuild@0.27.2)(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       serialize-javascript: 6.0.2
       terser: 5.46.0
-      webpack: 5.104.1(@swc/core@1.15.11)
+      webpack: 5.104.1(@swc/core@1.15.11)(esbuild@0.27.2)
     optionalDependencies:
       '@swc/core': 1.15.11
+      esbuild: 0.27.2
 
   terser@5.46.0:
     dependencies:
@@ -1788,7 +1813,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.104.1(@swc/core@1.15.11):
+  webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -1812,7 +1837,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.0
-      terser-webpack-plugin: 5.3.16(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11))
+      terser-webpack-plugin: 5.3.16(@swc/core@1.15.11)(esbuild@0.27.2)(webpack@5.104.1(@swc/core@1.15.11)(esbuild@0.27.2))
       watchpack: 2.5.1
       webpack-sources: 3.3.3
     transitivePeerDependencies:

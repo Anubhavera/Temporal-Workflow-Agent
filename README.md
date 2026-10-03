@@ -1,6 +1,6 @@
 # Workflow Agent (Temporal-Backed)
 
-A minimal agent execution engine demonstrating correct Temporal usage for workflow orchestration.
+A local research-workflow demo with real Temporal orchestration and simulated data-source activities. It is not connected to an LLM, customer database, or external research API.
 
 ---
 
@@ -67,7 +67,7 @@ fetchSourceA(spec)   // Network I/O to source A
 fetchSourceB(spec)   // Network I/O to source B
 ```
 
-Each represents a distinct side-effect boundary. They are independently retryable and testable. The synthesis step is a pure function inside the workflow — no side effects, so making it an activity would add latency without retry benefit.
+Each represents a distinct side-effect boundary. They are independently retryable and testable. The synthesis step runs inside the workflow; Temporal's sandbox supplies replay-safe `Date.now()` for its completion timestamp.
 
 **Why not child workflows?** Child workflows would be appropriate if: (1) sub-tasks need independent retry budgets, (2) sub-tasks are reusable across workflows, or (3) event history would exceed ~50K events. None apply here.
 
@@ -110,8 +110,7 @@ Workflows must be deterministic for Temporal's replay mechanism. Here's what tha
 
 | ❌ Forbidden in Workflows | ✅ Safe Alternatives |
 |---------------------------|---------------------|
-| `Math.random()` | Use activity or workflow.random() |
-| `Date.now()` | Use `workflow.now()` |
+| Time/random outside the Temporal sandbox | Activities for external time/randomness; the sandbox provides replay-safe `Date.now()` and `Math.random()` |
 | `fetch()` / HTTP calls | Move to activity |
 | `fs.readFile()` | Move to activity |
 | Global mutable state | Pass state through workflow arguments |
@@ -123,7 +122,9 @@ The workflow in this project only contains:
 
 ### Cancellation Handling
 
-The workflow respects Temporal cancellation. If cancelled, in-flight activities complete (no orphaned work), no new activities start, and the workflow returns a cancellation error.
+Cancellation is rethrown instead of converted into partial success. Fetch proxies wait for cancellation completion; activity sleeps use the cancellable activity context. Activities doing real external I/O must heartbeat regularly and pass the context cancellation signal to that I/O.
+
+`cd temporal && pnpm test` exercises successful results, partial source failure, and cancellation against an ephemeral local Temporal server with controlled test activities. It also checks invalid activity input. The API regression test can be run from the repository root with `temporal/node_modules/.bin/tsx --tsconfig frontend/tsconfig.json --test frontend/tests/*.test.ts` after both packages are installed. Neither test establishes a real external research integration.
 
 ---
 
@@ -134,7 +135,7 @@ The workflow respects Temporal cancellation. If cancelled, in-flight activities 
 | Polling for status | WebSocket/SSE for real-time updates |
 | Mock activities | Real API integrations with proper auth |
 | Single worker | Horizontal scaling with multiple workers |
-| No persistence | PostgreSQL for task history and audit logs |
+| Local development Temporal server | Durable production Temporal service and operational backups |
 | UUID workflow IDs | Deterministic IDs for idempotency |
 | No observability | Prometheus metrics, structured logging |
 

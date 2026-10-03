@@ -7,7 +7,7 @@ A local research-workflow demo with real Temporal orchestration and simulated da
 ## Quick Start
 
 ```bash
-# Prerequisites: Node.js 18+, pnpm
+# Prerequisites: Node.js 20+ (verified on Node 22), pnpm 10.33.0 via Corepack
 
 # 1. Start Temporal (in separate terminal)
 temporal server start-dev
@@ -200,3 +200,21 @@ frontend/
 3. **Error granularity**: Activities throw typed errors. The workflow catches and handles them explicitly rather than relying on default behavior.
 
 4. **Single workflow**: The task is cohesive enough that child workflows aren't necessary. One workflow with multiple activities is sufficient.
+
+
+### Dependency maintenance (2026-10-03)
+
+The frontend is now pinned to Next.js 15.5.27 and React 19.2.8. The status
+route awaits Promise-based route parameters, following the
+[Next.js 15 upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-15).
+Next.js 14 has no patched release for the critical advisories found in this
+lockfile. Both packages use pinned pnpm 10.33.0 through Corepack; pnpm 12
+ignores package.json overrides and must not regenerate these locks.
+
+Narrow overrides patch the existing protobufjs, gRPC, PostCSS, nanoid and
+uuid dependency lines. The worker also patches its webpack toolchain:
+AJV, fast-uri, browserslist and baseline-browser-mapping within their
+existing major versions, plus serialize-javascript 7.0.5. The latter raises
+the minimum Node version to 20; its CommonJS callable API and actual Terser
+webpack production minification are verified in the maintenance checks.
+These changes leave the Temporal SDK at 1.14.1.

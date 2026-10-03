@@ -12,10 +12,10 @@ import { getWorkflowStatus } from '@/lib/temporal';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { workflowId: string } }
+  { params }: { params: Promise<{ workflowId: string }> }
 ) {
   try {
-    const { workflowId } = params;
+    const { workflowId } = await params;
 
     if (!workflowId) {
       return NextResponse.json(
